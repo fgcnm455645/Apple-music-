@@ -20,23 +20,23 @@ jobs:
           if [ -z "$SETTINGS" ]; then echo "settings.gradle.kts not found"; exit 1; fi
           echo "PROJ_DIR=$(dirname "$SETTINGS")" >> "$GITHUB_ENV"
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
-      # The runner already ships with the Android SDK, so no separate SDK action is needed.
-      - name: Accept licenses and install NDK and CMake
+      # The runner already ships with the Android SDK; make sure the newest platform is there.
+      - name: Accept licenses and install Android platform 37
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" --install "ndk;27.0.12077973" "cmake;3.22.1" || true
+          "$SDKM" --install "platforms;android-37" "build-tools;37.0.0" || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.11.1
+          gradle-version: 9.7.1
 
       - name: Build release APK
         working-directory: ${{ env.PROJ_DIR }}
